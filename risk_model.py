@@ -22,12 +22,11 @@ from sklearn.preprocessing import StandardScaler
 random.seed(42)
 np.random.seed(42)
 
-# ─── 1. LOAD REAL DATA ────────────────────────────────────────────────────────
 
 demographics = pd.read_csv("patient_demographics.csv")
 prescriptions = pd.read_csv("prescription_audit.csv")
 
-# ─── 2. HEX TELEMETRY DECODER ─────────────────────────────────────────────────
+
 
 def hex_to_vitals(hex_str: str, patient_age: int) -> dict:
     """
@@ -72,7 +71,6 @@ def generate_hex_stream(patient_age: int, tick: float) -> str:
     raw = (b0 << 24) | (b1 << 16) | (b2 << 8) | b3
     return f"0x{raw:08X}"
 
-# ─── 3. IDENTITY COLLISION RESOLVER ───────────────────────────────────────────
 
 def resolve_identity(ghost_id: str, vitals: dict, demographics_df: pd.DataFrame) -> dict:
     """
@@ -94,7 +92,7 @@ def resolve_identity(ghost_id: str, vitals: dict, demographics_df: pd.DataFrame)
         p0 = candidates[candidates["parity_group"] == 0].iloc[0]
         p1 = candidates[candidates["parity_group"] == 1].iloc[0]
 
-        # Parity rule: higher HR + higher age → parity_group 1
+     
         hr_parity = 1 if vitals["hr"] > 90 else 0
         age_parity = 1 if p1["age"] > p0["age"] else 0
         resolved_parity = 1 if (hr_parity + age_parity) >= 1 else 0
@@ -109,7 +107,7 @@ def resolve_identity(ghost_id: str, vitals: dict, demographics_df: pd.DataFrame)
     return {"resolved": False, "collision": False,
             "patient": ghost_id, "age": 50, "internal_id": -1, "parity": 0}
 
-# ─── 4. CAESAR CIPHER DRUG DECODER ────────────────────────────────────────────
+
 
 KNOWN_DRUGS = {
     "Amoxicillin", "Metformin", "Lisinopril", "Atorvastatin",
@@ -125,7 +123,7 @@ def decode_drug(scrambled: str) -> dict:
     Attempt Caesar cipher reversal across all 25 shifts.
     If no known drug is found, flag as unresolved (potential contraband/error).
     """
-    # First check if it's already a real drug (like Amoxicillin in the data)
+    
     if scrambled.capitalize() in KNOWN_DRUGS or scrambled in KNOWN_DRUGS:
         name = scrambled.capitalize()
         return {"decoded": name, "shift": 0, "resolved": True,
@@ -148,7 +146,7 @@ def decode_drug(scrambled: str) -> dict:
     return {"decoded": f"UNKNOWN({scrambled})", "shift": -1,
             "resolved": False, "high_risk": True}
 
-# ─── 5. NEWS2 CLINICAL SCORING ────────────────────────────────────────────────
+
 
 def news2_score(vitals: dict) -> dict:
     """
@@ -208,7 +206,7 @@ def news2_score(vitals: dict) -> dict:
 
     return {"components": scores, "total": total, "level": level}
 
-# ─── 6. ISOLATION FOREST ANOMALY LAYER ───────────────────────────────────────
+
 
 def build_anomaly_model(n_patients: int = 200) -> tuple:
     """
@@ -238,7 +236,7 @@ def build_anomaly_model(n_patients: int = 200) -> tuple:
     model.fit(X_scaled)
     return model, scaler
 
-# ─── 7. FUSED RISK SCORE ─────────────────────────────────────────────────────
+
 
 def compute_risk_score(
     vitals: dict,
@@ -256,11 +254,10 @@ def compute_risk_score(
       - Age factor:              15%
       - Drug interaction risk:   10%
     """
-    # NEWS2: max total is 20, normalize to 0–1
+    
     news2_norm = min(news2["total"] / 20.0, 1.0)
 
-    # Isolation Forest: returns negative value for anomalies; remap to 0–1
-    # score_samples() returns log likelihood; more negative = more anomalous
+
     anomaly_norm = max(0.0, min(1.0, -anomaly_score))
 
     # Age factor: sigmoid centred at 70, steeper for elderly
@@ -354,7 +351,7 @@ def run_pipeline(tick: float, model: IsolationForest, scaler: StandardScaler) ->
     results.sort(key=lambda x: x["risk"]["score"], reverse=True)
     return results
 
-# ─── 9. DEMO RUN ──────────────────────────────────────────────────────────────
+
 
 if __name__ == "__main__":
     print("Building anomaly detection model...")

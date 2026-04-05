@@ -641,7 +641,7 @@ async function loadRealData() {
     const data = await response.json();
     console.log('Loaded data:', data.length, 'patients');
 
-    // Convert JSON data to the format expected by the dashboard
+    
     DEMOGRAPHICS = data.map(p => ({
       internal_id: p.identity.internal_id,
       ghost_id: p.ghost_id,
@@ -666,7 +666,7 @@ async function loadRealData() {
     console.log('Converted to', DEMOGRAPHICS.length, 'demographics and', PRESCRIPTIONS.length, 'prescriptions');
   } catch (error) {
     console.error('Failed to load icu_payload.json, using simulated data:', error);
-    // Fallback to original simulated data
+    
     loadSimulatedData();
   }
 }
@@ -719,9 +719,6 @@ function loadSimulatedData() {
   ];
 }
 
-/* ═══════════════════════════════════════════════════════════
-   2. ML ENGINE
-═══════════════════════════════════════════════════════════ */
 
 // Drug decoder — Caesar cipher reversal
 const KNOWN_DRUGS = new Set(["Amoxicillin","Metformin","Lisinopril","Atorvastatin",

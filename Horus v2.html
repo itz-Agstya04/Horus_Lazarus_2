@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>HORUS v2 — ICU Early Warning System</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ════════════════════════════════════════════════════
+   RESET & ROOT VARIABLES
+════════════════════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+:root{
+  --bg:#060a10;
+  --s1:#0b1018;     /* panel background */
+  --s2:#111922;     /* elevated surface */
+  --s3:#182030;     /* hover / accent bg */
+  --border:rgba(60,140,255,0.09);
+  --border2:rgba(60,140,255,0.18);
+  --border3:rgba(60,140,255,0.32);
+  --text:#ccdcf0;
+  --text2:#8aa0bc;
+  --text3:#4a6080;
+  --cyan:#00c8f0;
+  --cyan2:#00a0c8;
+  --green:#00d870;
+  --amber:#f0a000;
+  --red:#f03050;
+  --purple:#9060f0;
+  --pink:#e040a0;
+  --teal:#00c8a0;
+  --M:'Space Grotesk',sans-serif;
+  --MONO:'JetBrains Mono',monospace;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--M);overflow-x:hidden}
+
+/* ════════════════════════════════════════════════════
+   SCROLLBAR
+════════════════════════════════════════════════════ */
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border3);border-radius:2px}
+
+/* ════════════════════════════════════════════════════
+   HEADER
+════════════════════════════════════════════════════ */
+.hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;height:56px;
+  background:var(--s1);
+  border-bottom:1px solid var(--border2);
+  position:sticky;top:0;z-index:200;
+}
+.hdr-left{display:flex;align-items:center;gap:16px}
+
+/* animated ECG logo */
+.logo{
+  width:40px;height:40px;border-radius:8px;
+  border:1px solid var(--border3);
+  background:rgba(0,200,240,0.06);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.logo svg{width:28px;height:18px}
+.ecg-line{
+  stroke:var(--cyan);stroke-width:1.5;fill:none;
+  stroke-dasharray:80;stroke-dashoffset:80;
+  animation:ecg 2s linear infinite;
+}
+@keyframes ecg{
+  0%{stroke-dashoffset:80}
+  50%{stroke-dashoffset:0}
+  100%{stroke-dashoffset:-80}
+}
+
+.brand{display:flex;flex-direction:column;gap:1px}
+.brand-name{font-size:16px;font-weight:700;letter-spacing:.04em;color:var(--text)}
+.brand-name em{color:var(--cyan);font-style:normal}
+.brand-sub{font-size:10px;color:var(--text3);font-family:var(--MONO);letter-spacing:.06em}
+
+.hdr-center{display:flex;gap:6px}
+.nav-tab{
+  font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  padding:6px 14px;border-radius:6px;cursor:pointer;border:none;
+  background:transparent;color:var(--text3);transition:all .15s;
+}
+.nav-tab.active{background:rgba(0,200,240,.1);color:var(--cyan);border:1px solid rgba(0,200,240,.2)}
+.nav-tab:not(.active):hover{background:var(--s2);color:var(--text2)}
+
+.hdr-right{display:flex;align-items:center;gap:14px}
+.live-pill{
+  display:flex;align-items:center;gap:6px;
+  font-family:var(--MONO);font-size:10px;font-weight:700;
+  color:var(--green);border:1px solid rgba(0,216,112,.25);
+  border-radius:99px;padding:5px 14px;letter-spacing:.08em;
+  background:rgba(0,216,112,.05);
+}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.1s infinite}
+@keyframes blink{0%,100%{opacity:1}45%,55%{opacity:.1}}
+.clock-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:1px}
+.clock{font-family:var(--MONO);font-size:14px;font-weight:500;color:var(--text)}
+.clock-date{font-family:var(--MONO);font-size:9px;color:var(--text3)}
+
+/* ════════════════════════════════════════════════════
+   LAYOUT
+════════════════════════════════════════════════════ */
+.main{padding:16px 24px;display:flex;flex-direction:column;gap:14px}
+
+/* KPI strip */
+.kpi-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.kpi{
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:10px;padding:14px 16px;position:relative;overflow:hidden;
+  cursor:default;transition:border-color .2s;
+}
+.kpi:hover{border-color:var(--border2)}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:10px 10px 0 0}
+.kpi.c-red::before{background:var(--red)}
+.kpi.c-amber::before{background:var(--amber)}
+.kpi.c-green::before{background:var(--green)}
+.kpi.c-cyan::before{background:var(--cyan)}
+.kpi.c-purple::before{background:var(--purple)}
+.kpi.c-teal::before{background:var(--teal)}
+.kpi-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:8px}
+.kpi-val{font-size:30px;font-weight:700;line-height:1;transition:color .3s}
+.c-red .kpi-val{color:var(--red)}
+.c-amber .kpi-val{color:var(--amber)}
+.c-green .kpi-val{color:var(--green)}
+.c-cyan .kpi-val{color:var(--cyan)}
+.c-purple .kpi-val{color:var(--purple)}
+.c-teal .kpi-val{color:var(--teal)}
+.kpi-trend{font-size:10px;color:var(--text3);margin-top:5px;font-family:var(--MONO)}
+.kpi-spark{position:absolute;bottom:0;right:0;opacity:.25}
+
+/* panels */
+.panel{background:var(--s1);border:1px solid var(--border);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+.ph{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;border-bottom:1px solid var(--border);flex-shrink:0;min-height:40px;
+}
+.ph-left{display:flex;align-items:center;gap:8px}
+.ph-dot{width:5px;height:5px;border-radius:50%}
+.ph-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text2)}
+.ph-right{font-size:10px;color:var(--text3);font-family:var(--MONO)}
+
+/* grid rows */
+.row-top{display:grid;grid-template-columns:2fr 1.2fr 1fr;gap:14px}
+.row-mid{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:14px}
+.row-bot{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+
+/* ════════════════════════════════════════════════════
+   CHART PANEL
+════════════════════════════════════════════════════ */
+.chart-tabs{display:flex;gap:4px;padding:8px 14px 0}
+.ctab{
+  font-size:9px;font-weight:700;font-family:var(--MONO);letter-spacing:.06em;
+  padding:4px 10px;border-radius:5px;cursor:pointer;
+  border:1px solid var(--border);color:var(--text3);background:transparent;
+  transition:all .15s;text-transform:uppercase;
+}
+.ctab.active{background:rgba(0,200,240,.1);border-color:var(--cyan);color:var(--cyan)}
+.chart-area{padding:10px 14px;position:relative;height:200px}
+.chart-area-tall{padding:10px 14px;position:relative;height:240px}
+.hex-ticker{
+  padding:5px 14px;border-top:1px solid var(--border);
+  font-family:var(--MONO);font-size:8px;color:var(--cyan);opacity:.45;
+  white-space:nowrap;overflow:hidden;letter-spacing:.04em;flex-shrink:0;
+}
+
+/* ════════════════════════════════════════════════════
+   PATIENT TABLE
+════════════════════════════════════════════════════ */
+.pt-wrap{overflow-y:auto;flex:1}
+.pt{width:100%;border-collapse:collapse;font-size:11px}
+.pt thead th{
+  position:sticky;top:0;background:var(--s1);
+  padding:7px 12px;text-align:left;
+  font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;
+  color:var(--text3);border-bottom:1px solid var(--border);white-space:nowrap;
+}
+.pt tbody td{
+  padding:7px 12px;border-bottom:1px solid rgba(60,140,255,.04);
+  color:var(--text);vertical-align:middle;
+}
+.pt tbody tr{cursor:pointer;transition:background .1s}
+.pt tbody tr:hover td{background:rgba(0,200,240,.04)}
+.pt tbody tr.selected td{background:rgba(0,200,240,.07)}
+
+/* vitals mini sparkline cell */
+.spark-cell{width:80px}
+.spark-cell canvas{display:block}
+
+.risk-bar-wrap{display:flex;align-items:center;gap:7px;min-width:90px}
+.rb{flex:1;height:3px;background:var(--s3);border-radius:99px;overflow:hidden}
+.rbf{height:100%;border-radius:99px;transition:width .7s ease}
+.rnum{font-family:var(--MONO);font-size:10px;font-weight:700;min-width:22px;text-align:right}
+
+.badge{display:inline-block;font-size:8px;font-weight:700;padding:2px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+.badge.crit{background:rgba(240,48,80,.15);color:var(--red)}
+.badge.high{background:rgba(240,160,0,.15);color:var(--amber)}
+.badge.med{background:rgba(0,200,240,.1);color:var(--cyan)}
+.badge.stable{background:rgba(0,216,112,.1);color:var(--green)}
+
+.tag{display:inline-block;font-family:var(--MONO);font-size:8px;padding:2px 6px;border-radius:3px}
+.tag.ghost{background:rgba(0,200,240,.07);color:var(--cyan);border:1px solid rgba(0,200,240,.15)}
+.tag.col{background:rgba(224,64,160,.1);color:var(--pink);border:1px solid rgba(224,64,160,.2)}
+.tag.rx{background:rgba(144,96,240,.1);color:var(--purple);border:1px solid rgba(144,96,240,.2)}
+.tag.unk{background:rgba(240,48,80,.1);color:var(--red);border:1px solid rgba(240,48,80,.2)}
+.tag.ok{background:rgba(0,216,112,.08);color:var(--green);border:1px solid rgba(0,216,112,.15)}
+
+/* ════════════════════════════════════════════════════
+   BED MAP
+════════════════════════════════════════════════════ */
+.bed-grid{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:8px;
+  padding:12px;
+}
+.bed{
+  border-radius:8px;border:1px solid var(--border);
+  padding:10px 8px;text-align:center;cursor:pointer;
+  transition:all .2s;background:var(--s2);
+  display:flex;flex-direction:column;gap:4px;
+}
+.bed:hover{border-color:var(--border3);transform:translateY(-1px)}
+.bed.selected{border-color:var(--cyan);background:rgba(0,200,240,.07)}
+.bed.b-crit{border-color:rgba(240,48,80,.4);background:rgba(240,48,80,.08)}
+.bed.b-high{border-color:rgba(240,160,0,.3);background:rgba(240,160,0,.06)}
+.bed.b-stable{border-color:rgba(0,216,112,.2);background:rgba(0,216,112,.04)}
+.bed-num{font-family:var(--MONO);font-size:9px;color:var(--text3)}
+.bed-name{font-size:9px;font-weight:600;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bed-score{font-family:var(--MONO);font-size:13px;font-weight:700;line-height:1}
+.bed-icon{font-size:16px;line-height:1}
+
+/* ════════════════════════════════════════════════════
+   ALERT FEED
+════════════════════════════════════════════════════ */
+.alert-list{overflow-y:auto;flex:1}
+.alert-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:9px 14px;border-bottom:1px solid rgba(60,140,255,.05);
+  animation:slideIn .25s ease;
+}
+@keyframes slideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+.al-icon{
+  width:20px;height:20px;border-radius:4px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;margin-top:1px;
+}
+.al-icon.crit{background:rgba(240,48,80,.18);color:var(--red)}
+.al-icon.warn{background:rgba(240,160,0,.18);color:var(--amber)}
+.al-icon.info{background:rgba(0,200,240,.12);color:var(--cyan)}
+.al-icon.drug{background:rgba(144,96,240,.18);color:var(--purple)}
+.al-body{flex:1;min-width:0}
+.al-patient{font-size:11px;font-weight:600}
+.al-patient.crit{color:var(--red)}
+.al-patient.warn{color:var(--amber)}
+.al-patient.info{color:var(--cyan)}
+.al-patient.drug{color:var(--purple)}
+.al-msg{font-size:10px;color:var(--text3);margin-top:2px;line-height:1.4}
+.al-time{font-family:var(--MONO);font-size:9px;color:var(--text3);white-space:nowrap;margin-top:1px}
+
+/* ════════════════════════════════════════════════════
+   TIMELINE
+════════════════════════════════════════════════════ */
+.tl-list{overflow-y:auto;flex:1}
+.tl-item{
+  display:flex;gap:10px;padding:9px 14px;
+  border-bottom:1px solid rgba(60,140,255,.04);
+}
+.tl-time{font-family:var(--MONO);font-size:9px;color:var(--text3);min-width:44px;margin-top:2px}
+.tl-line{display:flex;flex-direction:column;align-items:center;gap:0}
+.tl-dot2{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.tl-stem{width:1px;background:var(--border);flex:1;min-height:12px;margin-top:2px}
+.tl-body{flex:1}
+.tl-title{font-size:11px;font-weight:600;color:var(--text);line-height:1.3}
+.tl-sub{font-size:10px;color:var(--text3);margin-top:2px;line-height:1.35}
+
+/* ════════════════════════════════════════════════════
+   DETAIL MODAL (right slide-in panel)
+════════════════════════════════════════════════════ */
+.detail-panel{
+  position:fixed;right:-400px;top:56px;bottom:0;width:380px;
+  background:var(--s1);border-left:1px solid var(--border2);
+  z-index:150;transition:right .3s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.detail-panel.open{right:0}
+.detail-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.detail-name{font-size:15px;font-weight:700}
+.close-btn{
+  width:28px;height:28px;border-radius:6px;border:1px solid var(--border2);
+  background:transparent;color:var(--text2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:14px;
+  transition:all .15s;
+}
+.close-btn:hover{background:var(--s2);color:var(--text)}
+.detail-body{flex:1;overflow-y:auto;padding:16px}
+.detail-section{margin-bottom:18px}
+.detail-section-title{
+  font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--text3);margin-bottom:10px;
+  padding-bottom:6px;border-bottom:1px solid var(--border);
+}
+.vital-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.vital-card{
+  background:var(--s2);border-radius:8px;padding:10px 12px;
+  border:1px solid var(--border);
+}
+.vital-label{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.vital-val{font-size:20px;font-weight:700;font-family:var(--MONO)}
+.vital-unit{font-size:10px;color:var(--text3);margin-left:2px}
+.vital-status{font-size:9px;margin-top:3px;font-family:var(--MONO)}
+.news2-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.news2-label{font-size:10px;color:var(--text2);min-width:80px}
+.news2-seg-wrap{flex:1;display:flex;gap:2px}
+.news2-seg{height:8px;flex:1;border-radius:2px;background:var(--s3);transition:background .4s}
+.news2-score-val{font-family:var(--MONO);font-size:10px;min-width:18px;text-align:right;color:var(--text2)}
+.risk-arc-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;padding:10px 0}
+.risk-arc-label{font-size:10px;color:var(--text3);text-align:center}
+.fusion-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.fusion-label{font-size:10px;color:var(--text2);min-width:90px}
+.fusion-bar-bg{flex:1;height:5px;background:var(--s3);border-radius:99px;overflow:hidden}
+.fusion-bar-fill{height:100%;border-radius:99px;transition:width .5s}
+.fusion-val{font-family:var(--MONO);font-size:9px;color:var(--text3);min-width:30px;text-align:right}
+
+/* ════════════════════════════════════════════════════
+   RX PANEL
+════════════════════════════════════════════════════ */
+.rx-list{overflow-y:auto;flex:1}
+.rx-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:8px 14px;border-bottom:1px solid rgba(60,140,255,.04);
+}
+.rx-left{min-width:90px}
+.rx-patient{font-size:11px;font-weight:600;color:var(--text)}
+.rx-ghost{font-family:var(--MONO);font-size:8px;color:var(--text3);margin-top:2px}
+.rx-drugs{flex:1;display:flex;flex-wrap:wrap;gap:4px;align-items:flex-start;padding-top:1px}
+
+/* ════════════════════════════════════════════════════
+   RADAR CHART WRAPPER
+════════════════════════════════════════════════════ */
+.radar-wrap{padding:8px 14px;position:relative;height:200px}
+
+/* ════════════════════════════════════════════════════
+   STAT TABLE (NEWS2 detail)
+════════════════════════════════════════════════════ */
+.stat-table{width:100%;border-collapse:collapse;font-size:11px}
+.stat-table td{padding:5px 12px;border-bottom:1px solid rgba(60,140,255,.05)}
+.stat-table td:first-child{color:var(--text2);font-size:10px;text-transform:uppercase;letter-spacing:.07em}
+.stat-table td:last-child{text-align:right;font-family:var(--MONO);font-weight:600}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════ HEADER ═══════════════════════ -->
+<header class="hdr">
+  <div class="hdr-left">
+    <div class="logo">
+      <svg viewBox="0 0 28 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polyline class="ecg-line" points="0,9 4,9 6,3 8,15 10,6 12,12 14,9 28,9"/>
+      </svg>
+    </div>
+    <div class="brand">
+      <div class="brand-name"><em>HORUS</em> — ICU Early Warning System</div>
+      <div class="brand-sub">NEWS2 · Isolation Forest · Caesar Cipher · Parity Resolver · Round 2</div>
+    </div>
+  </div>
+  <div class="hdr-center">
+    <button class="nav-tab active" onclick="setView('overview')">Overview</button>
+    <button class="nav-tab" onclick="setView('patients')">Patients</button>
+    <button class="nav-tab" onclick="setView('timeline')">Timeline</button>
+    <button class="nav-tab" onclick="setView('rx')">Rx Audit</button>
+  </div>
+  <div class="hdr-right">
+    <div class="live-pill"><div class="live-dot"></div>LIVE STREAM</div>
+    <div class="clock-wrap">
+      <div class="clock" id="clock-el">--:--:--</div>
+      <div class="clock-date" id="date-el">---</div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════ MAIN ═══════════════════════ -->
+<div class="main" id="main-area">
+
+  <!-- KPI STRIP -->
+  <div class="kpi-strip">
+    <div class="kpi c-red">
+      <div class="kpi-label">Critical</div>
+      <div class="kpi-val" id="k-crit">0</div>
+      <div class="kpi-trend" id="k-crit-t">Risk ≥ 75</div>
+    </div>
+    <div class="kpi c-amber">
+      <div class="kpi-label">High Risk</div>
+      <div class="kpi-val" id="k-high">0</div>
+      <div class="kpi-trend">50 ≤ score &lt; 75</div>
+    </div>
+    <div class="kpi c-cyan">
+      <div class="kpi-label">Medium</div>
+      <div class="kpi-val" id="k-med">0</div>
+      <div class="kpi-trend">30 ≤ score &lt; 50</div>
+    </div>
+    <div class="kpi c-green">
+      <div class="kpi-label">Stable</div>
+      <div class="kpi-val" id="k-stable">0</div>
+      <div class="kpi-trend">Score &lt; 30</div>
+    </div>
+    <div class="kpi c-purple">
+      <div class="kpi-label">Rx Flags</div>
+      <div class="kpi-val" id="k-drugs">0</div>
+      <div class="kpi-trend">High-risk Rx</div>
+    </div>
+    <div class="kpi c-teal">
+      <div class="kpi-label">ID Collisions</div>
+      <div class="kpi-val" id="k-coll">0</div>
+      <div class="kpi-trend">Resolved via parity</div>
+    </div>
+  </div>
+
+  <!-- ROW TOP: main chart | bed map | alert feed -->
+  <div class="row-top">
+
+    <!-- Risk Chart -->
+    <div class="panel">
+      <div class="ph">
+        <div class="ph-left">
+          <div class="ph-dot" style="background:var(--cyan)"></div>
+          <div class="ph-title">Multi-variable risk — live average</div>
+        </div>
+        <div style="display:flex;gap:4px" id="chart-tabs">
+          <button class="ctab active" onclick="setChart('risk')">RISK</button>
+          <button class="ctab" onclick="setChart('hr')">HR</button>
+          <button class="ctab" onclick="setChart('bp')">BP</button>
+          <button class="ctab" onclick="setChart('spo2')">SpO₂</button>
+          <button class="ctab" onclick="setChart('rr')">RR</button>
+          <button class="ctab" onclick="setChart('news2')">NEWS2</button>
+        </div>
+      </div>
+      <div class="chart-area"><canvas id="mainChart"></canvas></div>
+      <div class="hex-ticker" id="hex-ticker">Initialising stream...</div>
+    </div>
+
+    <!-- ICU Bed Map -->
+    <div class="panel">
+      <div class="ph">
+        <div class="ph-left">
+          <div class="ph-dot" style="background:var(--teal)"></div>
+          <div class="ph-title">ICU bed map</div>
+        </div>
+        <div class="ph-right" id="bed-summary">0 occupied</div>
+      </div>
+      <div class="bed-grid" id="bed-grid"></div>
+    </div>
+
+    <!-- Alert Feed -->
+    <div class="panel">
+      <div class="ph">
+        <div class="ph-left">
+          <div class="ph-dot" style="background:var(--red)"></div>
+          <div class="ph-title">Alert feed</div>
+        </div>
+        <div class="ph-right" id="alert-count">0 active</div>
+      </div>
+      <div class="alert-list" id="alert-list" style="max-height:280px"></div>
+    </div>
+
+  </div>
+
+  <!-- ROW MID: patient table | radar chart | timeline -->
+  <div class="row-mid">
+
+    <!-- Patient Table -->
+    <div class="panel" style="max-height:320px">
+      <div class="ph">
+        <div class="ph-left">
+          <div class="ph-dot" style="background:var(--purple)"></div>
+          <div class="ph-title">Patient risk monitor</div>
+        </div>
+        <div class="ph-right">click row for detail</div>
+      </div>
+      <div class="pt-wrap">
+        <table class="pt">
+          <thead>
+            <tr>
+              <th>Patient</th>
+              <th>Age</th>
+              <th>Ghost ID</th>
+              <th>HR</th>
+              <th>BP</th>
+              <th>SpO₂</th>
+              <th>Temp</th>
+              <th>NEWS2</th>
+              <th>Risk</th>
+              <th>Status</th>
+              <th>Flags</th>
+            </tr>
+          </thead>
+          <tbody id="pt-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Radar chart for top patient -->
+    <div class="panel">
+      <div class="ph">
+        <div class="ph-left">
+          <div class="ph-dot" style="background:var(--amber)"></div>
+          <div class="ph-title">Vitals radar</div>
+        </div>
+        <div class="ph-right" id="radar-patient-label">Top risk patient</div>
+      </div>
+      <div class="radar-wrap"><canvas id="radarChart"></canvas></div>
+      <div style="padding:0 14px 12px">
+        <table class="stat-table" id="radar-stats"></table>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="panel" style="max-height:320px">
+      <div class="ph">
+        <div class="ph-left">
+          <div class="ph-dot" style="background:var(--amber)"></div>
+          <div class="ph-title">Patient flow timeline</div>
+        </div>
+        <div class="ph-right" id="tl-count">0 events</div>
+      </div>
+      <div class="tl-list" id="tl-list" style="max-height:272px"></div>
+    </div>
+
+  </div>
+
+  <!-- ROW BOT: Rx cross-ref | decoder log | anomaly chart -->
+  <div class="row-bot">
+
+    <!-- Rx Cross Reference -->
+    <div class="panel" style="max-height:280px">
+      <div class="ph">
+        <div class="ph-left">
+          <div class="ph-dot" style="background:var(--purple)"></div>
+          <div class="ph-title">Rx cross-reference</div>
+        </div>
+        <div class="ph-right">ghost ID join · both CSVs</div>
+      </div>
+      <div class="rx-list" style="max-height:232px" id="rx-list"></div>
+    </div>
+
+    <!-- Hex Decoder Log -->
+    <div class="panel" style="max-height:280px">
+      <div class="ph">
+        <div class="ph-left">
+          <div class="ph-dot" style="background:var(--cyan)"></div>
+          <div class="ph-title">Hex decoder log</div>
+        </div>
+        <div class="ph-right">Caesar shift + parity</div>
+      </div>
+      <div style="overflow-y:auto;max-height:232px;font-family:var(--MONO);font-size:10px;padding:8px 14px;line-height:1.7" id="decoder-log"></div>
+    </div>
+
+    <!-- Anomaly Scatter (simulated per-patient) -->
+    <div class="panel" style="max-height:280px">
+      <div class="ph">
+        <div class="ph-left">
+          <div class="ph-dot" style="background:var(--teal)"></div>
+          <div class="ph-title">Isolation Forest anomaly</div>
+        </div>
+        <div class="ph-right">anomaly vs risk score</div>
+      </div>
+      <div class="chart-area" style="height:230px"><canvas id="scatterChart"></canvas></div>
+    </div>
+
+  </div>
+
+</div><!-- /main -->
+
+<!-- ═══════════════════════ DETAIL PANEL ═══════════════════════ -->
+<div class="detail-panel" id="detail-panel">
+  <div class="detail-hdr">
+    <div>
+      <div class="detail-name" id="dp-name">—</div>
+      <div style="font-size:10px;color:var(--text3);font-family:var(--MONO);margin-top:2px" id="dp-meta">—</div>
+    </div>
+    <button class="close-btn" onclick="closeDetail()">✕</button>
+  </div>
+  <div class="detail-body">
+
+    <!-- Risk arc -->
+    <div class="detail-section">
+      <div class="detail-section-title">Fused risk score</div>
+      <div class="risk-arc-wrap">
+        <canvas id="arcChart" width="200" height="120"></canvas>
+        <div class="risk-arc-label" id="dp-risk-label">—</div>
+      </div>
+      <!-- Fusion breakdown -->
+      <div id="dp-fusion"></div>
+    </div>
+
+    <!-- Vitals -->
+    <div class="detail-section">
+      <div class="detail-section-title">Current vitals</div>
+      <div class="vital-grid" id="dp-vitals"></div>
+    </div>
+
+    <!-- NEWS2 -->
+    <div class="detail-section">
+      <div class="detail-section-title">NEWS2 component scores</div>
+      <div id="dp-news2"></div>
+    </div>
+
+    <!-- Drugs -->
+    <div class="detail-section">
+      <div class="detail-section-title">Prescription audit</div>
+      <div id="dp-drugs" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+    </div>
+
+    <!-- Identity -->
+    <div class="detail-section">
+      <div class="detail-section-title">Identity resolution</div>
+      <div id="dp-identity" style="font-size:11px;color:var(--text2);line-height:1.7"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   1. LOAD REAL DATA FROM PYTHON SCRIPT
+═══════════════════════════════════════════════════════════ */
+let DEMOGRAPHICS = [];
+let PRESCRIPTIONS = [];
+
+async function loadRealData() {
+  try {
+    console.log('Attempting to load icu_payload.json...');
+    const response = await fetch('icu_payload.json');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    console.log('Loaded data:', data.length, 'patients');
+
+    // Convert JSON data to the format expected by the dashboard
+    DEMOGRAPHICS = data.map(p => ({
+      internal_id: p.identity.internal_id,
+      ghost_id: p.ghost_id,
+      parity_group: p.identity.parity,
+      name: p.identity.patient,
+      age: p.identity.age
+    }));
+
+    PRESCRIPTIONS = [];
+    data.forEach(p => {
+      p.drugs.forEach((drug, idx) => {
+        PRESCRIPTIONS.push({
+          rx_id: p.ghost_id + '_' + idx, // Generate an ID
+          ghost_id: p.ghost_id,
+          scrambled_med: drug.decoded.startsWith('UNKNOWN(') ?
+            drug.decoded.replace('UNKNOWN(', '').replace(')', '') :
+            drug.decoded
+        });
+      });
+    });
+
+    console.log('Converted to', DEMOGRAPHICS.length, 'demographics and', PRESCRIPTIONS.length, 'prescriptions');
+  } catch (error) {
+    console.error('Failed to load icu_payload.json, using simulated data:', error);
+    // Fallback to original simulated data
+    loadSimulatedData();
+  }
+}
+
+function loadSimulatedData() {
+  DEMOGRAPHICS = [
+    {internal_id:0,ghost_id:"G-100",parity_group:0,name:"Patient_0",age:58},
+    {internal_id:1,ghost_id:"G-100",parity_group:1,name:"Patient_1",age:50},
+    {internal_id:2,ghost_id:"G-101",parity_group:0,name:"Patient_2",age:37},
+    {internal_id:3,ghost_id:"G-101",parity_group:1,name:"Patient_3",age:52},
+    {internal_id:4,ghost_id:"G-102",parity_group:0,name:"Patient_4",age:83},
+    {internal_id:5,ghost_id:"G-102",parity_group:1,name:"Patient_5",age:55},
+    {internal_id:6,ghost_id:"G-103",parity_group:0,name:"Patient_6",age:76},
+    {internal_id:7,ghost_id:"G-103",parity_group:1,name:"Patient_7",age:30},
+    {internal_id:8,ghost_id:"G-104",parity_group:0,name:"Patient_8",age:44},
+    {internal_id:9,ghost_id:"G-104",parity_group:1,name:"Patient_9",age:11},
+    {internal_id:10,ghost_id:"G-105",parity_group:0,name:"Patient_10",age:39},
+    {internal_id:11,ghost_id:"G-105",parity_group:1,name:"Patient_11",age:85},
+    {internal_id:12,ghost_id:"G-106",parity_group:0,name:"Patient_12",age:61},
+    {internal_id:13,ghost_id:"G-106",parity_group:1,name:"Patient_13",age:9},
+    {internal_id:14,ghost_id:"G-107",parity_group:0,name:"Patient_14",age:38},
+    {internal_id:15,ghost_id:"G-107",parity_group:1,name:"Patient_15",age:8},
+    {internal_id:16,ghost_id:"G-108",parity_group:0,name:"Patient_16",age:37},
+    {internal_id:17,ghost_id:"G-108",parity_group:1,name:"Patient_17",age:66},
+    {internal_id:18,ghost_id:"G-109",parity_group:0,name:"Patient_18",age:31},
+    {internal_id:19,ghost_id:"G-109",parity_group:1,name:"Patient_19",age:33},
+  ];
+
+  PRESCRIPTIONS = [
+    {rx_id:4311,ghost_id:"G-100",scrambled_med:"Otyarot"},
+    {rx_id:6571,ghost_id:"G-100",scrambled_med:"Kcrdmpkgl"},
+    {rx_id:1260,ghost_id:"G-101",scrambled_med:"Lxzitntwwty"},
+    {rx_id:6431,ghost_id:"G-101",scrambled_med:"Amoxicillin"},
+    {rx_id:5816,ghost_id:"G-102",scrambled_med:"Fxunwns"},
+    {rx_id:2119,ghost_id:"G-102",scrambled_med:"Dpralfloolq"},
+    {rx_id:9224,ghost_id:"G-103",scrambled_med:"Kcrdmpkgl"},
+    {rx_id:2301,ghost_id:"G-103",scrambled_med:"Mrwypmr"},
+    {rx_id:7526,ghost_id:"G-104",scrambled_med:"Afkmdaf"},
+    {rx_id:7457,ghost_id:"G-104",scrambled_med:"Xpeqzcxty"},
+    {rx_id:9167,ghost_id:"G-105",scrambled_med:"Nfcveva"},
+    {rx_id:2422,ghost_id:"G-105",scrambled_med:"Puzbspu"},
+    {rx_id:7359,ghost_id:"G-106",scrambled_med:"Rwbdurw"},
+    {rx_id:9253,ghost_id:"G-106",scrambled_med:"Rwbdurw"},
+    {rx_id:2135,ghost_id:"G-107",scrambled_med:"Mebuduz"},
+    {rx_id:9019,ghost_id:"G-107",scrambled_med:"Iaxqzqv"},
+    {rx_id:7811,ghost_id:"G-108",scrambled_med:"Xpeqzcxty"},
+    {rx_id:1701,ghost_id:"G-108",scrambled_med:"Wbgizwb"},
+    {rx_id:3198,ghost_id:"G-109",scrambled_med:"Rjyktwrns"},
+    {rx_id:4700,ghost_id:"G-109",scrambled_med:"Tlamvytpu"},
+  ];
+}
+
+/* ═══════════════════════════════════════════════════════════
+   2. ML ENGINE
+═══════════════════════════════════════════════════════════ */
+
+// Drug decoder — Caesar cipher reversal
+const KNOWN_DRUGS = new Set(["Amoxicillin","Metformin","Lisinopril","Atorvastatin",
+  "Omeprazole","Amlodipine","Metoprolol","Furosemide","Warfarin","Insulin",
+  "Morphine","Heparin","Clopidogrel","Ramipril","Digoxin","Vancomycin"]);
+const HIGH_RISK = new Set(["Warfarin","Morphine","Heparin","Digoxin","Vancomycin","Insulin"]);
+
+function decodeDrug(s) {
+  const tryMatch = str => {
+    const c = str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    if (KNOWN_DRUGS.has(c)) return {decoded:c,resolved:true,highRisk:HIGH_RISK.has(c)};
+    if (KNOWN_DRUGS.has(str)) return {decoded:str,resolved:true,highRisk:HIGH_RISK.has(str)};
+    return null;
+  };
+  const direct = tryMatch(s);
+  if (direct) return {...direct, shift:0};
+  for (let shift = 1; shift < 26; shift++) {
+    let c = '';
+    for (const ch of s) {
+      if (/[a-zA-Z]/.test(ch)) {
+        const base = ch === ch.toUpperCase() ? 65 : 97;
+        c += String.fromCharCode(((ch.charCodeAt(0)-base-shift+26)%26)+base);
+      } else c += ch;
+    }
+    const m = tryMatch(c);
+    if (m) return {...m, shift};
+  }
+  return {decoded:'UNRESOLVED', shift:-1, resolved:false, highRisk:true};
+}
+
+// Pre-decode all Rx
+const decodedRx = {};
+PRESCRIPTIONS.forEach(rx => {
+  if (!decodedRx[rx.ghost_id]) decodedRx[rx.ghost_id] = [];
+  decodedRx[rx.ghost_id].push({...rx, drug:decodeDrug(rx.scrambled_med)});
+});
+
+// Hex telemetry generator
+function generateHex(age, tick) {
+  const n = Math.sin(tick*.7)*.3 + Math.sin(tick*1.3)*.15;
+  const a = age/100;
+  const b0 = Math.round((a*.4+Math.abs(n)*.6)*255)&0xFF;
+  const b1 = Math.round((a*.5+Math.abs(n)*.4)*255)&0xFF;
+  const b2 = Math.round((1-a*.3-Math.abs(n)*.3)*255)&0xFF;
+  const b3 = Math.round((a*.4+Math.abs(n)*.3)*255)&0xFF;
+  return '0x'+(((b0<<24)|(b1<<16)|(b2<<8)|b3)>>>0).toString(16).toUpperCase().padStart(8,'0');
+}
+
+function hexToVitals(hex, age) {
+  const v = parseInt(hex,16);
+  const b0=(v>>>24)&0xFF, b1=(v>>>16)&0xFF, b2=(v>>>8)&0xFF, b3=v&0xFF;
+  const a = age/100;
+  return {
+    hr:  Math.max(40, Math.min(200, Math.round(60 +(b0/255)*60 +a*20))),
+    bp:  Math.max(80, Math.min(220, Math.round(100+(b1/255)*80 +a*30))),
+    spo2:Math.max(80, Math.min(100, Math.round(100-(b2/255)*20 -a*5))),
+    rr:  Math.max(8,  Math.min(40,  Math.round(12 +(b3/255)*20 +a*5))),
+    temp:Math.max(35, Math.min(41,  parseFloat((36+(b0/255)*3.5-(b2/255)).toFixed(1)))),
+  };
+}
+
+// Identity resolver — parity-bit collision resolution
+function resolveIdentity(gid, vitals) {
+  const group = DEMOGRAPHICS.filter(d=>d.ghost_id===gid);
+  if (group.length===1) return {...group[0],collision:false};
+  if (group.length===2) {
+    const p0=group.find(p=>p.parity_group===0), p1=group.find(p=>p.parity_group===1);
+    const hrParity=vitals.hr>90?1:0, ageParity=p1.age>p0.age?1:0;
+    const chosen=(hrParity+ageParity)>=1?p1:p0;
+    return {...chosen,collision:true,partner:(chosen===p1?p0:p1).name};
+  }
+  return {name:gid,age:50,ghost_id:gid,collision:false};
+}
+
+// NEWS2 clinical scoring (NHS standard)
+function news2(vitals) {
+  const s={};
+  const rr=vitals.rr;  s.rr  =rr<=8?3:rr<=11?1:rr<=20?0:rr<=24?2:3;
+  const sp=vitals.spo2;s.spo2=sp>=96?0:sp>=94?1:sp>=92?2:3;
+  const bp=vitals.bp;  s.bp  =bp<=90?3:bp<=100?2:bp<=110?1:bp<=219?0:3;
+  const hr=vitals.hr;  s.hr  =hr<=40?3:hr<=50?1:hr<=90?0:hr<=110?1:hr<=130?2:3;
+  const t=vitals.temp; s.temp=t<=35?3:t<=36?1:t<=38?0:t<=39?1:2;
+  const total=Object.values(s).reduce((a,b)=>a+b,0);
+  return {components:s,total,level:total>=7?"CRITICAL":total>=5?"HIGH":total>=3?"MEDIUM":"LOW"};
+}
+
+// Anomaly detection — Mahalanobis distance (mirrors Isolation Forest from Python)
+function anomalyScore(vitals) {
+  const norms={hr:[75,12],bp:[125,18],spo2:[96,2],rr:[16,3],temp:[37,.5]};
+  const keys=['hr','bp','spo2','rr','temp'];
+  const zSum=keys.reduce((s,k)=>{const[mu,sig]=norms[k];const z=(vitals[k]-mu)/sig;return s+z*z;},0);
+  return Math.max(0,Math.min(1,(Math.sqrt(zSum/keys.length)-.5)/4.5));
+}
+
+// Fused risk score — weighted fusion of all signals
+function computeRisk(vitals,n2,anom,age,drugRisk) {
+  const news2N=Math.min(n2.total/20,1);
+  const ageN=1/(1+Math.exp(-(age-68)/8));
+  const drugN=drugRisk?1:0;
+  const raw=news2N*.45+anom*.30+ageN*.15+drugN*.10;
+  const score=Math.min(99,Math.max(1,Math.round(raw*100)));
+  return {
+    score,
+    status:score>=75?"CRITICAL":score>=50?"HIGH":score>=30?"MEDIUM":"STABLE",
+    components:{
+      news2:+(news2N*.45*100).toFixed(1),
+      anomaly:+(anom*.30*100).toFixed(1),
+      age:+(ageN*.15*100).toFixed(1),
+      drug:+(drugN*.10*100).toFixed(1),
+    }
+  };
+}
+
+// Full pipeline — runs every 2 seconds
+function runPipeline(tick) {
+  const gids=[...new Set(DEMOGRAPHICS.map(d=>d.ghost_id))];
+  return gids.map(gid=>{
+    const seed=DEMOGRAPHICS.find(d=>d.ghost_id===gid);
+    const hex=generateHex(seed.age,tick+seed.internal_id*.7);
+    const vitals=hexToVitals(hex,seed.age);
+    const identity=resolveIdentity(gid,vitals);
+    const rxs=decodedRx[gid]||[];
+    const drugRisk=rxs.some(r=>r.drug.highRisk);
+    const n2=news2(vitals);
+    const anom=anomalyScore(vitals);
+    const risk=computeRisk(vitals,n2,anom,identity.age,drugRisk);
+    return {ghost_id:gid,hex,identity,vitals,news2:n2,drugs:rxs,drugRisk,anomaly:anom,risk};
+  }).sort((a,b)=>b.risk.score-a.risk.score);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   3. DASHBOARD STATE
+═══════════════════════════════════════════════════════════ */
+let tick=0, patients=[], alerts=[], tlEvents=[], chartMode='risk', selectedGhost=null;
+let sparkHistory={};  // per-patient risk history for mini sparklines
+
+const CHART_COLORS={risk:'#00c8f0',hr:'#f03050',bp:'#f0a000',spo2:'#00d870',rr:'#e040a0',news2:'#9060f0'};
+const CHART_MAX={risk:100,hr:200,bp:220,spo2:100,rr:40,news2:20};
+
+let chartData={labels:[],risk:[],hr:[],bp:[],spo2:[],rr:[],news2:[]};
+let mainChart, radarChart, scatterChart, arcChart;
+
+/* ═══════════════════════════════════════════════════════════
+   4. CHART INIT
+═══════════════════════════════════════════════════════════ */
+function initCharts() {
+  // Main time-series chart
+  mainChart=new Chart(document.getElementById('mainChart').getContext('2d'),{
+    type:'line',
+    data:{labels:[],datasets:[{
+      label:'Risk',data:[],borderColor:'#00c8f0',
+      backgroundColor:'rgba(0,200,240,.06)',
+      borderWidth:2,pointRadius:0,tension:0.4,fill:true,
+    }]},
+    options:{
+      responsive:true,maintainAspectRatio:false,animation:{duration:300},
+      plugins:{legend:{display:false},tooltip:{
+        backgroundColor:'#111922',borderColor:'rgba(60,140,255,.2)',borderWidth:1,
+        titleColor:'#4a6080',bodyColor:'#ccdcf0',
+        titleFont:{family:'JetBrains Mono',size:9},bodyFont:{family:'Space Grotesk',size:11},
+      }},
+      scales:{
+        x:{display:false},
+        y:{min:0,max:100,
+          grid:{color:'rgba(60,140,255,.05)'},
+          ticks:{color:'#4a6080',font:{family:'JetBrains Mono',size:9}},
+          border:{display:false}}
+      }
+    }
+  });
+
+  // Radar chart
+  radarChart=new Chart(document.getElementById('radarChart').getContext('2d'),{
+    type:'radar',
+    data:{
+      labels:['HR','BP','SpO₂','Resp Rate','Temp'],
+      datasets:[{
+        label:'Vitals',
+        data:[0,0,0,0,0],
+        borderColor:'#f0a000',backgroundColor:'rgba(240,160,0,.1)',
+        borderWidth:1.5,pointRadius:3,pointBackgroundColor:'#f0a000',
+      },{
+        label:'Normal',
+        data:[75,125,96,16,37],
+        borderColor:'rgba(0,200,240,.3)',backgroundColor:'rgba(0,200,240,.04)',
+        borderWidth:1,pointRadius:0,
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{
+        backgroundColor:'#111922',borderColor:'rgba(60,140,255,.2)',borderWidth:1,
+        titleColor:'#4a6080',bodyColor:'#ccdcf0',
+        titleFont:{family:'JetBrains Mono',size:9},
+      }},
+      scales:{r:{
+        grid:{color:'rgba(60,140,255,.08)'},
+        angleLines:{color:'rgba(60,140,255,.08)'},
+        ticks:{display:false},
+        pointLabels:{color:'#8aa0bc',font:{family:'Space Grotesk',size:10,weight:'600'}},
+      }}
+    }
+  });
+
+  // Scatter chart (anomaly vs risk)
+  scatterChart=new Chart(document.getElementById('scatterChart').getContext('2d'),{
+    type:'scatter',
+    data:{datasets:[{
+      label:'Patients',data:[],
+      pointRadius:6,pointHoverRadius:8,
+      backgroundColor:ctx=>{
+        const v=ctx.raw&&ctx.raw.y;
+        return v>=75?'rgba(240,48,80,.8)':v>=50?'rgba(240,160,0,.8)':v>=30?'rgba(0,200,240,.8)':'rgba(0,216,112,.8)';
+      },
+      pointBorderColor:'transparent',
+    }]},
+    options:{
+      responsive:true,maintainAspectRatio:false,animation:{duration:400},
+      plugins:{legend:{display:false},tooltip:{
+        backgroundColor:'#111922',borderColor:'rgba(60,140,255,.2)',borderWidth:1,
+        titleColor:'#4a6080',bodyColor:'#ccdcf0',
+        titleFont:{family:'JetBrains Mono',size:9},
+        callbacks:{
+          label:ctx=>`${ctx.raw.label}: anomaly ${ctx.raw.x.toFixed(2)} | risk ${ctx.raw.y}`,
+        }
+      }},
+      scales:{
+        x:{min:0,max:1,
+          title:{display:true,text:'Anomaly Score (IF)',color:'#4a6080',font:{family:'JetBrains Mono',size:9}},
+          grid:{color:'rgba(60,140,255,.05)'},
+          ticks:{color:'#4a6080',font:{family:'JetBrains Mono',size:9}},
+          border:{display:false}},
+        y:{min:0,max:100,
+          title:{display:true,text:'Risk Score',color:'#4a6080',font:{family:'JetBrains Mono',size:9}},
+          grid:{color:'rgba(60,140,255,.05)'},
+          ticks:{color:'#4a6080',font:{family:'JetBrains Mono',size:9}},
+          border:{display:false}}
+      }
+    }
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   5. HELPERS
+═══════════════════════════════════════════════════════════ */
+function riskColor(s){return s>=75?'#f03050':s>=50?'#f0a000':s>=30?'#00c8f0':'#00d870'}
+function statusBadge(st){
+  const m={CRITICAL:'crit',HIGH:'high',MEDIUM:'med',STABLE:'stable'};
+  return `<span class="badge ${m[st]||'stable'}">${st}</span>`;
+}
+function vitalStatus(key,val){
+  const ranges={hr:[60,100],bp:[90,140],spo2:[95,100],rr:[12,20],temp:[36.1,37.9]};
+  const [lo,hi]=ranges[key]||[0,999];
+  if(val<lo) return {color:'#00c8f0',label:'LOW'};
+  if(val>hi) return {color:'#f03050',label:'HIGH'};
+  return {color:'#00d870',label:'NORMAL'};
+}
+function now(){return new Date().toLocaleTimeString('en-IN',{hour12:false})}
+
+/* ═══════════════════════════════════════════════════════════
+   6. KPIs
+═══════════════════════════════════════════════════════════ */
+function updateKPIs(pts){
+  document.getElementById('k-crit').textContent  =pts.filter(p=>p.risk.status==='CRITICAL').length;
+  document.getElementById('k-high').textContent  =pts.filter(p=>p.risk.status==='HIGH').length;
+  document.getElementById('k-med').textContent   =pts.filter(p=>p.risk.status==='MEDIUM').length;
+  document.getElementById('k-stable').textContent=pts.filter(p=>p.risk.status==='STABLE').length;
+  document.getElementById('k-drugs').textContent =pts.filter(p=>p.drugRisk).length;
+  document.getElementById('k-coll').textContent  =pts.filter(p=>p.identity.collision).length;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   7. PATIENT TABLE
+═══════════════════════════════════════════════════════════ */
+function updatePatientTable(pts){
+  document.getElementById('pt-body').innerHTML=pts.map(p=>{
+    const v=p.vitals, s=p.risk.score, col=riskColor(s);
+    const flags=[
+      p.identity.collision?`<span class="tag col">⚡ ID</span>`:'',
+      p.drugRisk?`<span class="tag rx">⚠ Rx</span>`:'',
+      p.drugs.some(d=>!d.drug.resolved)?`<span class="tag unk">? DRUG</span>`:'',
+    ].filter(Boolean).join(' ');
+    const sel=selectedGhost===p.ghost_id?' selected':'';
+    return `<tr class="${sel}" onclick="openDetail('${p.ghost_id}')">
+      <td style="font-weight:600">${p.identity.name}</td>
+      <td style="color:var(--text2)">${p.identity.age}</td>
+      <td><span class="tag ghost">${p.ghost_id}</span></td>
+      <td style="color:${vitalStatus('hr',v.hr).color};font-family:var(--MONO);font-size:10px">${v.hr}</td>
+      <td style="color:${vitalStatus('bp',v.bp).color};font-family:var(--MONO);font-size:10px">${v.bp}</td>
+      <td style="color:${vitalStatus('spo2',v.spo2).color};font-family:var(--MONO);font-size:10px">${v.spo2}%</td>
+      <td style="color:${vitalStatus('temp',v.temp).color};font-family:var(--MONO);font-size:10px">${v.temp}</td>
+      <td style="font-family:var(--MONO);font-size:10px;color:${p.news2.total>=7?'#f03050':p.news2.total>=5?'#f0a000':'#8aa0bc'}">${p.news2.total}</td>
+      <td>
+        <div class="risk-bar-wrap">
+          <div class="rb"><div class="rbf" style="width:${s}%;background:${col}"></div></div>
+          <span class="rnum" style="color:${col}">${s}</span>
+        </div>
+      </td>
+      <td>${statusBadge(p.risk.status)}</td>
+      <td>${flags}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   8. BED MAP
+═══════════════════════════════════════════════════════════ */
+function updateBedMap(pts){
+  document.getElementById('bed-summary').textContent=`${pts.length} occupied`;
+  const icons={CRITICAL:'🔴',HIGH:'🟡',MEDIUM:'🔵',STABLE:'🟢'};
+  const bedClass={CRITICAL:'b-crit',HIGH:'b-high',MEDIUM:'',STABLE:'b-stable'};
+  document.getElementById('bed-grid').innerHTML=pts.map((p,i)=>{
+    const sel=selectedGhost===p.ghost_id?' selected':'';
+    return `<div class="bed ${bedClass[p.risk.status]}${sel}" onclick="openDetail('${p.ghost_id}')">
+      <div class="bed-num">BAY ${String(i+1).padStart(2,'0')}</div>
+      <div class="bed-icon">${icons[p.risk.status]}</div>
+      <div class="bed-name">${p.identity.name}</div>
+      <div class="bed-score" style="color:${riskColor(p.risk.score)}">${p.risk.score}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   9. RADAR + STATS
+═══════════════════════════════════════════════════════════ */
+function updateRadar(pts){
+  const p=pts[0];
+  if(!p) return;
+  document.getElementById('radar-patient-label').textContent=p.identity.name;
+  radarChart.data.datasets[0].data=[p.vitals.hr,p.vitals.bp,p.vitals.spo2,p.vitals.rr,p.vitals.temp];
+  radarChart.update('none');
+  document.getElementById('radar-stats').innerHTML=`
+    <tr><td>NEWS2 total</td><td style="color:${p.news2.total>=7?'#f03050':p.news2.total>=5?'#f0a000':'#00d870'}">${p.news2.total}/20</td></tr>
+    <tr><td>Anomaly score</td><td style="color:${p.anomaly>.5?'#f03050':'#8aa0bc'}">${p.anomaly.toFixed(3)}</td></tr>
+    <tr><td>Fused risk</td><td style="color:${riskColor(p.risk.score)}">${p.risk.score}/99</td></tr>
+    <tr><td>Drug risk</td><td style="color:${p.drugRisk?'#f03050':'#00d870'}">${p.drugRisk?'YES':'CLEAR'}</td></tr>
+    <tr><td>Identity</td><td style="color:${p.identity.collision?'#e040a0':'#8aa0bc'}">${p.identity.collision?'COLLISION':'RESOLVED'}</td></tr>
+  `;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   10. SCATTER (anomaly vs risk)
+═══════════════════════════════════════════════════════════ */
+function updateScatter(pts){
+  scatterChart.data.datasets[0].data=pts.map(p=>({
+    x:parseFloat(p.anomaly.toFixed(3)),
+    y:p.risk.score,
+    label:p.identity.name,
+  }));
+  scatterChart.update('none');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   11. CHART DATA PUSH
+═══════════════════════════════════════════════════════════ */
+function pushChartData(pts){
+  const t=now();
+  const avg=key=>Math.round(pts.reduce((s,p)=>s+p.vitals[key],0)/pts.length);
+  if(chartData.labels.length>=40){
+    ['labels','risk','hr','bp','spo2','rr','news2'].forEach(k=>chartData[k].shift());
+  }
+  chartData.labels.push(t);
+  chartData.risk.push(Math.round(pts.reduce((s,p)=>s+p.risk.score,0)/pts.length));
+  chartData.hr.push(avg('hr'));
+  chartData.bp.push(avg('bp'));
+  chartData.spo2.push(avg('spo2'));
+  chartData.rr.push(avg('rr'));
+  chartData.news2.push(Math.round(pts.reduce((s,p)=>s+p.news2.total,0)/pts.length));
+
+  mainChart.data.labels=[...chartData.labels];
+  mainChart.data.datasets[0].data=[...chartData[chartMode]];
+  mainChart.data.datasets[0].borderColor=CHART_COLORS[chartMode];
+  mainChart.data.datasets[0].backgroundColor=CHART_COLORS[chartMode]+'10';
+  mainChart.options.scales.y.max=CHART_MAX[chartMode];
+  mainChart.update('none');
+}
+
+function setChart(mode){
+  chartMode=mode;
+  document.querySelectorAll('.ctab').forEach(t=>t.classList.toggle('active',t.textContent.toLowerCase()===mode));
+  pushChartData(patients);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   12. HEX TICKER
+═══════════════════════════════════════════════════════════ */
+function updateHexTicker(pts){
+  const hexes=pts.slice(0,10).map(p=>`${p.ghost_id}:${p.hex}`).join('  ');
+  document.getElementById('hex-ticker').textContent='Stream: '+hexes+'  ...';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   13. ALERT FEED
+═══════════════════════════════════════════════════════════ */
+const alertFns=[
+  p=>p.risk.status==='CRITICAL'?{cls:'crit',icon:'!',msg:`SpO₂ ${p.vitals.spo2}% — critical hypoxia. Immediate intervention.`}:null,
+  p=>p.vitals.hr>115?{cls:'crit',icon:'!',msg:`Tachycardia ${p.vitals.hr} bpm — arrhythmia risk.`}:null,
+  p=>p.vitals.bp>160?{cls:'warn',icon:'▲',msg:`Hypertensive crisis: BP ${p.vitals.bp} mmHg.`}:null,
+  p=>p.vitals.spo2<93?{cls:'warn',icon:'▲',msg:`SpO₂ ${p.vitals.spo2}% — consider O₂ supplementation.`}:null,
+  p=>p.vitals.rr>22?{cls:'info',icon:'i',msg:`Elevated RR ${p.vitals.rr}/min — respiratory distress?`}:null,
+  p=>p.drugRisk&&p.identity.collision?{cls:'drug',icon:'Rx',msg:`High-risk drug + identity collision — manual verify required.`}:null,
+  p=>p.drugs.some(d=>!d.drug.resolved)?{cls:'drug',icon:'?',msg:`Unresolved drug code for ${p.ghost_id} — pharmacist review.`}:null,
+];
+
+function updateAlerts(pts){
+  const t=now();
+  pts.forEach(p=>alertFns.forEach(fn=>{
+    const a=fn(p);
+    if(a&&Math.random()<.18) alerts.unshift({...a,patient:p.identity.name,ghost:p.ghost_id,t});
+  }));
+  while(alerts.length>12) alerts.pop();
+  document.getElementById('alert-count').textContent=alerts.filter(a=>a.cls==='crit').length+' critical';
+  document.getElementById('alert-list').innerHTML=alerts.slice(0,9).map(a=>`
+    <div class="alert-item">
+      <div class="al-icon ${a.cls}">${a.icon}</div>
+      <div class="al-body">
+        <div class="al-patient ${a.cls}">${a.patient} <span class="tag ghost">${a.ghost}</span></div>
+        <div class="al-msg">${a.msg}</div>
+        <div class="al-time">${a.t}</div>
+      </div>
+    </div>`).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   14. TIMELINE
+═══════════════════════════════════════════════════════════ */
+const tlFns=[
+  (p,t)=>p.identity.collision?{dot:'#00c8f0',title:'Identity collision resolved',sub:`${p.ghost_id} → ${p.identity.name} via parity bit`,t}:null,
+  (p,t)=>p.risk.status==='CRITICAL'?{dot:'#f03050',title:'Critical alert triggered',sub:`${p.identity.name} — risk ${p.risk.score}`,t}:null,
+  (p,t)=>!p.drugs[0]?.drug.resolved?{dot:'#f0a000',title:'Drug code unresolved',sub:`${p.ghost_id}: ${p.drugs[0]?.scrambled_med} → pharmacist review`,t}:null,
+  (p,t)=>p.news2.total>=5?{dot:'#9060f0',title:`NEWS2 score ${p.news2.total} — ${p.news2.level}`,sub:`${p.identity.name} — SpO₂:${p.vitals.spo2}% HR:${p.vitals.hr} BP:${p.vitals.bp}`,t}:null,
+  (p,t)=>p.drugRisk?{dot:'#e040a0',title:'High-risk Rx flagged',sub:`${p.ghost_id}: ${p.drugs.find(d=>d.drug.highRisk)?.drug.decoded||'unknown'}`,t}:null,
+];
+
+function updateTimeline(pts){
+  const t=now();
+  pts.slice(0,8).forEach(p=>tlFns.forEach(fn=>{
+    const e=fn(p,t);
+    if(e&&Math.random()<.15) tlEvents.unshift(e);
+  }));
+  while(tlEvents.length>20) tlEvents.pop();
+  document.getElementById('tl-count').textContent=tlEvents.length+' events';
+  document.getElementById('tl-list').innerHTML=tlEvents.map((e,i)=>`
+    <div class="tl-item">
+      <div class="tl-time">${e.t}</div>
+      <div class="tl-line">
+        <div class="tl-dot2" style="background:${e.dot}"></div>
+        ${i<tlEvents.length-1?'<div class="tl-stem"></div>':''}
+      </div>
+      <div class="tl-body">
+        <div class="tl-title">${e.title}</div>
+        <div class="tl-sub">${e.sub}</div>
+      </div>
+    </div>`).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   15. RX PANEL
+═══════════════════════════════════════════════════════════ */
+function updateRxPanel(pts){
+  document.getElementById('rx-list').innerHTML=pts.map(p=>{
+    const rxs=p.drugs; if(!rxs.length) return '';
+    const tags=rxs.map(r=>{
+      if(!r.drug.resolved) return `<span class="tag unk">? ${r.scrambled_med}</span>`;
+      if(r.drug.highRisk) return `<span class="tag rx">⚠ ${r.drug.decoded}</span>`;
+      return `<span class="tag ok">${r.drug.decoded}</span>`;
+    }).join('');
+    return `<div class="rx-item">
+      <div class="rx-left">
+        <div class="rx-patient">${p.identity.name}</div>
+        <div class="rx-ghost">${p.ghost_id}</div>
+      </div>
+      <div class="rx-drugs">${tags}</div>
+    </div>`;
+  }).filter(Boolean).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   16. DECODER LOG
+═══════════════════════════════════════════════════════════ */
+function updateDecoderLog(pts){
+  const lines=[];
+  pts.forEach(p=>{
+    lines.push(`<span style="color:var(--text3)">${p.ghost_id}</span>  ${p.hex}  <span style="color:var(--cyan)">→</span>  HR:<span style="color:var(--green)">${p.vitals.hr}</span> BP:<span style="color:var(--amber)">${p.vitals.bp}</span> SpO₂:<span style="color:${p.vitals.spo2<93?'#f03050':'#00d870'}">${p.vitals.spo2}%</span>`);
+    p.drugs.forEach(r=>{
+      const col=!r.drug.resolved?'#f03050':r.drug.highRisk?'#e040a0':'#00d870';
+      lines.push(`  ↳ Rx ${r.rx_id}: <span style="color:var(--text3)">${r.scrambled_med}</span> <span style="color:var(--cyan)">→</span> <span style="color:${col}">${r.drug.decoded}</span>${r.drug.shift>0?` <span style="color:var(--text3)">[shift:${r.drug.shift}]</span>`:''}`);
+    });
+  });
+  document.getElementById('decoder-log').innerHTML=lines.slice(0,40).join('<br>');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   17. DETAIL PANEL (slide-in)
+═══════════════════════════════════════════════════════════ */
+function openDetail(gid){
+  selectedGhost=gid;
+  const p=patients.find(pt=>pt.ghost_id===gid);
+  if(!p) return;
+
+  document.getElementById('dp-name').textContent=p.identity.name;
+  document.getElementById('dp-meta').textContent=`${p.ghost_id} · Age ${p.identity.age} · Parity ${p.identity.parity_group??'-'}`;
+
+  // Risk arc (gauge drawn on canvas)
+  drawArc(p.risk.score);
+  document.getElementById('dp-risk-label').innerHTML=
+    `<span style="font-size:28px;font-weight:700;color:${riskColor(p.risk.score)}">${p.risk.score}</span><span style="color:var(--text3);font-size:11px"> / 99  ${statusBadge(p.risk.status)}</span>`;
+
+  // Fusion bars
+  const fc=p.risk.components;
+  document.getElementById('dp-fusion').innerHTML=`
+    <div class="fusion-row"><div class="fusion-label">NEWS2 (45%)</div><div class="fusion-bar-bg"><div class="fusion-bar-fill" style="width:${fc.news2/45*100}%;background:#9060f0"></div></div><div class="fusion-val">${fc.news2}</div></div>
+    <div class="fusion-row"><div class="fusion-label">Anomaly (30%)</div><div class="fusion-bar-bg"><div class="fusion-bar-fill" style="width:${fc.anomaly/30*100}%;background:#00c8f0"></div></div><div class="fusion-val">${fc.anomaly}</div></div>
+    <div class="fusion-row"><div class="fusion-label">Age factor (15%)</div><div class="fusion-bar-bg"><div class="fusion-bar-fill" style="width:${fc.age/15*100}%;background:#f0a000"></div></div><div class="fusion-val">${fc.age}</div></div>
+    <div class="fusion-row"><div class="fusion-label">Drug risk (10%)</div><div class="fusion-bar-bg"><div class="fusion-bar-fill" style="width:${fc.drug/10*100}%;background:#f03050"></div></div><div class="fusion-val">${fc.drug}</div></div>
+  `;
+
+  // Vitals grid
+  const vKeys=['hr','bp','spo2','rr','temp'];
+  const vLabels={hr:'Heart rate',bp:'Systolic BP',spo2:'SpO₂',rr:'Resp. rate',temp:'Temperature'};
+  const vUnits={hr:'bpm',bp:'mmHg',spo2:'%',rr:'/min',temp:'°C'};
+  document.getElementById('dp-vitals').innerHTML=vKeys.map(k=>{
+    const vs=vitalStatus(k,p.vitals[k]);
+    return `<div class="vital-card">
+      <div class="vital-label">${vLabels[k]}</div>
+      <div class="vital-val" style="color:${vs.color}">${p.vitals[k]}<span class="vital-unit">${vUnits[k]}</span></div>
+      <div class="vital-status" style="color:${vs.color}">${vs.label}</div>
+    </div>`;
+  }).join('');
+
+  // NEWS2 component bars
+  const nc=p.news2.components;
+  const nKeys=['hr','bp','spo2','rr','temp'];
+  document.getElementById('dp-news2').innerHTML=nKeys.map(k=>{
+    const v=nc[k];
+    const col=v>=3?'#f03050':v>=2?'#f0a000':v>=1?'#00c8f0':'#00d870';
+    return `<div class="news2-bar-row">
+      <div class="news2-label">${vLabels[k]}</div>
+      <div class="news2-seg-wrap">
+        ${[0,1,2,3].map(i=>`<div class="news2-seg" style="background:${i<v?col:'var(--s3)'}"></div>`).join('')}
+      </div>
+      <div class="news2-score-val" style="color:${col}">${v}/3</div>
+    </div>`;
+  }).join('')+`<div style="margin-top:8px;font-family:var(--MONO);font-size:11px">Total: <span style="color:${p.news2.total>=7?'#f03050':p.news2.total>=5?'#f0a000':'#8aa0bc'};font-weight:700">${p.news2.total}</span> — ${p.news2.level}</div>`;
+
+  // Drugs
+  const rxs=p.drugs;
+  document.getElementById('dp-drugs').innerHTML=rxs.length?rxs.map(r=>{
+    const col=!r.drug.resolved?'unk':r.drug.highRisk?'rx':'ok';
+    return `<span class="tag ${col}" style="font-size:10px">${r.drug.decoded}${r.drug.shift>0?` (shift ${r.drug.shift})`:''}${!r.drug.resolved?` [${r.scrambled_med}]`:''}</span>`;
+  }).join(''):`<span style="font-size:11px;color:var(--text3)">No prescriptions on file</span>`;
+
+  // Identity
+  document.getElementById('dp-identity').innerHTML=p.identity.collision
+    ?`Ghost ID <strong>${p.ghost_id}</strong> had a parity collision.<br>
+       Resolved to: <strong style="color:var(--cyan)">${p.identity.name}</strong> (age ${p.identity.age})<br>
+       Collision partner: <span style="color:var(--pink)">${p.identity.partner}</span><br>
+       Resolution method: HR parity + age weighting`
+    :`Ghost ID <strong>${p.ghost_id}</strong> — unique, no collision detected.<br>
+       Patient: <strong style="color:var(--green)">${p.identity.name}</strong> (age ${p.identity.age})`;
+
+  document.getElementById('detail-panel').classList.add('open');
+  updatePatientTable(patients); // re-render to show selection
+  updateBedMap(patients);
+}
+
+function drawArc(score){
+  const canvas=document.getElementById('arcChart');
+  const ctx=canvas.getContext('2d');
+  const w=200,h=120,cx=100,cy=100,r=75,start=Math.PI,end=start+Math.PI*(score/99);
+  ctx.clearRect(0,0,w,h);
+  ctx.beginPath();ctx.arc(cx,cy,r,Math.PI,2*Math.PI);
+  ctx.strokeStyle='rgba(60,140,255,.1)';ctx.lineWidth=12;ctx.lineCap='round';ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy,r,Math.PI,start+Math.PI*(score/99));
+  const col=riskColor(score);
+  ctx.strokeStyle=col;ctx.lineWidth=12;ctx.lineCap='round';ctx.stroke();
+}
+
+function closeDetail(){
+  document.getElementById('detail-panel').classList.remove('open');
+  selectedGhost=null;
+  updatePatientTable(patients);
+  updateBedMap(patients);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   18. CLOCK
+═══════════════════════════════════════════════════════════ */
+function updateClock(){
+  const d=new Date();
+  document.getElementById('clock-el').textContent=d.toLocaleTimeString('en-IN',{hour12:false});
+  document.getElementById('date-el').textContent=d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+}
+
+/* ═══════════════════════════════════════════════════════════
+   19. NAV VIEWS (stub — all panels always render)
+═══════════════════════════════════════════════════════════ */
+function setView(v){
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.toggle('active',t.textContent.toLowerCase()===v));
+}
+
+/* ═══════════════════════════════════════════════════════════
+   20. MAIN LOOPS
+═══════════════════════════════════════════════════════════ */
+function mainLoop(){
+  tick+=0.12;
+  patients=runPipeline(tick);
+  updateClock();
+  updateKPIs(patients);
+  updatePatientTable(patients);
+  updateBedMap(patients);
+  pushChartData(patients);
+  updateHexTicker(patients);
+  updateRadar(patients);
+  updateScatter(patients);
+  if(selectedGhost) openDetail(selectedGhost);
+}
+
+function slowLoop(){
+  updateAlerts(patients);
+  updateTimeline(patients);
+  updateRxPanel(patients);
+  updateDecoderLog(patients);
+}
+
+// Boot
+async function initDashboard() {
+  console.log('Initializing dashboard...');
+  await loadRealData();
+  console.log('Data loaded, initializing charts...');
+  initCharts();
+  console.log('Running initial pipeline...');
+  patients=runPipeline(tick);
+  console.log('Patients processed:', patients.length);
+  updateClock();
+  updateKPIs(patients);
+  updatePatientTable(patients);
+  updateBedMap(patients);
+  updateRxPanel(patients);
+  updateDecoderLog(patients);
+  updateRadar(patients);
+  updateScatter(patients);
+  slowLoop();
+  console.log('Dashboard initialized successfully');
+
+  setInterval(mainLoop,2000);
+  setInterval(slowLoop,5000);
+}
+
+initDashboard();
+</script>
+</body>
+</html>

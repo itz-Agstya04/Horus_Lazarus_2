@@ -1,0 +1,1162 @@
+[
+  {
+    "ghost_id": "G-105",
+    "hex_packet": "0x4D4ACE3A",
+    "identity": {
+      "resolved": true,
+      "collision": true,
+      "patient": "Patient_11",
+      "age": 85,
+      "internal_id": 11,
+      "parity": 1,
+      "collision_partner": "Patient_10"
+    },
+    "vitals": {
+      "hr": 85,
+      "bp": 134,
+      "spo2": 81,
+      "rr": 18,
+      "temp": 36.2
+    },
+    "news2": {
+      "components": {
+        "rr": 0,
+        "spo2": 3,
+        "bp": 0,
+        "hr": 0,
+        "temp": 0
+      },
+      "total": 3,
+      "level": "MEDIUM"
+    },
+    "drugs": [
+      {
+        "decoded": "UNKNOWN(Nfcveva)",
+        "shift": -1,
+        "resolved": false,
+        "high_risk": true
+      },
+      {
+        "decoded": "Insulin",
+        "shift": 7,
+        "resolved": true,
+        "high_risk": true
+      }
+    ],
+    "drug_risk": true,
+    "anomaly_raw": -0.573,
+    "risk": {
+      "score": 47,
+      "status": "MEDIUM",
+      "components": {
+        "news2_weight": 6.8,
+        "anomaly_weight": 17.2,
+        "age_weight": 13.4,
+        "drug_weight": 10.0
+      }
+    },
+    "tick": 0.0
+  },
+  {
+    "ghost_id": "G-102",
+    "hex_packet": "0x747EAF64",
+    "identity": {
+      "resolved": true,
+      "collision": true,
+      "patient": "Patient_5",
+      "age": 55,
+      "internal_id": 5,
+      "parity": 1,
+      "collision_partner": "Patient_4"
+    },
+    "vitals": {
+      "hr": 103,
+      "bp": 164,
+      "spo2": 82,
+      "rr": 23,
+      "temp": 36.9
+    },
+    "news2": {
+      "components": {
+        "rr": 2,
+        "spo2": 3,
+        "bp": 0,
+        "hr": 1,
+        "temp": 0
+      },
+      "total": 6,
+      "level": "HIGH"
+    },
+    "drugs": [
+      {
+        "decoded": "UNKNOWN(Fxunwns)",
+        "shift": -1,
+        "resolved": false,
+        "high_risk": true
+      },
+      {
+        "decoded": "Amoxicillin",
+        "shift": 3,
+        "resolved": true,
+        "high_risk": false
+      }
+    ],
+    "drug_risk": true,
+    "anomaly_raw": -0.6621,
+    "risk": {
+      "score": 46,
+      "status": "MEDIUM",
+      "components": {
+        "news2_weight": 13.5,
+        "anomaly_weight": 19.9,
+        "age_weight": 2.5,
+        "drug_weight": 10.0
+      }
+    },
+    "tick": 0.0
+  },
+  {
+    "ghost_id": "G-115",
+    "hex_packet": "0x8281AB65",
+    "identity": {
+      "resolved": true,
+      "collision": true,
+      "patient": "Patient_31",
+      "age": 43,
+      "internal_id": 31,
+      "parity": 1,
+      "collision_partner": "Patient_30"
+    },
+    "vitals": {
+      "hr": 104,
+      "bp": 161,
+      "spo2": 83,
+      "rr": 23,
+      "temp": 37.1
+    },
+    "news2": {
+      "components": {
+        "rr": 2,
+        "spo2": 3,
+        "bp": 0,
+        "hr": 1,
+        "temp": 0
+      },
+      "total": 6,
+      "level": "HIGH"
+    },
+    "drugs": [
+      {
+        "decoded": "UNKNOWN(Tlibkbg)",
+        "shift": -1,
+        "resolved": false,
+        "high_risk": true
+      },
+      {
+        "decoded": "Metformin",
+        "shift": 17,
+        "resolved": true,
+        "high_risk": false
+      }
+    ],
+    "drug_risk": true,
+    "anomaly_raw": -0.665,
+    "risk": {
+      "score": 44,
+      "status": "MEDIUM",
+      "components": {
+        "news2_weight": 13.5,
+        "anomaly_weight": 19.9,
+        "age_weight": 0.6,
+        "drug_weight": 10.0
+      }
+    },
+    "tick": 0.0
+  },
+  {
+    "ghost_id": "G-117",
+    "hex_packet": "0x868CA66E",
+    "identity": {
+      "resolved": true,
+      "collision": true,
+      "patient": "Patient_35",
+      "age": 27,
+      "internal_id": 35,
+      "parity": 1,
+      "collision_partner": "Patient_34"
+    },
+    "vitals": {
+      "hr": 108,
+      "bp": 169,
+      "spo2": 82,
+      "rr": 24,
+      "temp": 37.2
+    },
+    "news2": {
+      "components": {
+        "rr": 2,
+        "spo2": 3,
+        "bp": 0,
+        "hr": 1,
+        "temp": 0
+      },
+      "total": 6,
+      "level": "HIGH"
+    },
+    "drugs": [
+      {
+        "decoded": "Metformin",
+        "shift": 7,
+        "resolved": true,
+        "high_risk": false
+      },
+      {
+        "decoded": "UNKNOWN(Btqjsjo)",
+        "shift": -1,
+        "resolved": false,
+        "high_risk": true
+      }
+    ],
+    "drug_risk": true,
+    "anomaly_raw": -0.6727,
+    "risk": {
+      "score": 44,
+      "status": "MEDIUM",
+      "components": {
+        "news2_weight": 13.5,
+        "anomaly_weight": 20.2,
+        "age_weight": 0.1,
+        "drug_weight": 10.0
+      }
+    },
+    "tick": 0.0
+  },
+  {
+    "ghost_id": "G-103",
+    "hex_packet": "0x5565C151",
+    "identity": {
+      "resolved": true,
+      "collision": true,
+      "patient": "Patient_7",
+      "age": 30,
+      "internal_id": 7,
+      "parity": 1,
+      "collision_partner": "Patient_6"
+    },
+    "vitals": {
+      "hr": 95,
+      "bp": 154,
+      "spo2": 81,
+      "rr": 22,
+      "temp": 36.4
+    },
+    "news2": {
+      "components": {
+        "rr": 2,
+        "spo2": 3,
+        "bp": 0,
+        "hr": 1,
+        "temp": 0
+      },
+      "total": 6,
+      "level": "HIGH"
+    },
+    "drugs": [
+      {
+        "decoded": "Metformin",
+        "shift": 24,
+        "resolved": true,
+        "high_risk": false
+      },
+      {
+        "decoded": "Insulin",
+        "shift": 4,
+        "resolved": true,
+        "high_risk": true
+      }
+    ],
+    "drug_risk": true,
+    "anomaly_raw": -0.6335,
+    "risk": {
+      "score": 43,
+      "status": "MEDIUM",
+      "components": {
+        "news2_weight": 13.5,
+        "anomaly_weight": 19.0,
+        "age_weight": 0.1,
+        "drug_weight": 10.0
+      }
+    },
+    "tick": 0.0
+  },
+  {
+    "ghost_id": "G-108",
+    "hex_packet": "0x685BC147",
+    "identity": {
+      "resolved": true,
+      "collision": true,
+      "patient": "Patient_17",
+      "age": 66,
+      "internal_id": 17,
+      "parity": 1,
+      "collision_partner": "Patient_16"
+    },
+    "vitals": {
+      "hr": 91,
+      "bp": 139,
+      "spo2": 83,
+      "rr": 19,
+      "temp": 36.7
+    },
+    "news2": {
+      "components": {
+        "rr": 0,
+        "spo2": 3,
+        "bp": 0,
+        "hr": 1,
+        "temp": 0
+      },
+      "total": 4,
+      "level": "MEDIUM"
+    },
+    "drugs": [
+      {
+        "decoded": "Metformin",
+        "shift": 11,
+        "resolved": true,
+        "high_risk": false
+      },
+      {
+        "decoded": "Insulin",
+        "shift": 14,
+        "resolved": true,
+        "high_risk": true
+      }
+    ],
+    "drug_risk": true,
+    "anomaly_raw": -0.5593,
+    "risk": {
+      "score": 42,
+      "status": "MEDIUM",
+      "components": {
+        "news2_weight": 9.0,
+        "anomaly_weight": 16.8,
+        "age_weight": 6.6,
+        "drug_weight": 10.0
+      }
+    },
+    "tick": 0.0
+  },
+  {
+    "ghost_id": "G-100",
+    "hex_packet": "0x3B49D23B",
+    "identity": {
+      "resolved": true,
+      "collision": true,
+      "patient": "Patient_0",
+      "age": 58,
+      "internal_id": 0,
+      "parity": 0,
+      "collision_partner": "Patient_1"
+    },
+    "vitals": {
+      "hr": 85,
+      "bp": 140,
+      "spo2": 80,
+      "rr": 19,
+      "temp": 36.0
+    },
+    "news2": {
+      "components": {
+        "rr": 0,
+        "spo2": 3,
+        "bp": 0,
+        "hr": 0,
+        "temp": 1
+      },
+      "total": 4,
+      "level": "MEDIUM"
+    },
+    "drugs": [
+      {
+        "decoded": "Insulin",
+        "shift": 6,
+        "resolved": true,
+        "high_risk": true
+      },
+      {
+        "decoded": "Metformin",
+        "shift": 24,
+        "resolved": true,
+        "high_risk": false
+      }
+    ],
+    "drug_risk": true,
+    "anomaly_raw": -0.6055,
+    "risk": {
+      "score": 41,
+      "status": "MEDIUM",
+      "components": {
+        "news2_weight": 9.0,
+        "anomaly_weight": 18.2,
+        "age_weight": 3.3,
+        "drug_weight": 10.0
+      }
+    },
+    "tick": 0.0
+  },
+  {
+    "ghost_id": "G-106",
+    "hex_packet": "0x6769BB52",
+    "identity": {
+      "resolved": true,
+      "collision": true,
+      "patient": "Patient_13",
+      "age": 9,
+      "internal_id": 13,
+      "parity": 1,
+      "collision_partner": "Patient_12"
+    },
+    "vitals": {
+      "hr": 96,
+      "bp": 151,
+      "spo2": 82,
+      "rr": 21,
+      "temp": 36.7
+    },
+    "news2": {
+      "components": {
+        "rr": 2,
+        "spo2": 3,
+        "bp": 0,
+        "hr": 1,
+        "temp": 0
+      },
+      "total": 6,
+      "level": "HIGH"
+    },
+    "drugs": [
+      {
+        "decoded": "Insulin",
+        "shift": 9,
+        "resolved": true,
+        "high_risk": true
+      },
+      {
+        "decoded": "Insulin",
+        "shift": 9,
+        "resolved": true,
+        "high_risk": true
+      }
+    ],
+    "drug_risk": true,
+    "anomaly_raw": -0.5956,
+    "risk": {
+      "score": 41,
+      "status": "MEDIUM",
+      "components": {
+        "news2_weight": 13.5,
+        "anomaly_weight": 17.9,
+        "age_weight": 0.0,
+        "drug_weight": 10.0
+      }
+    },
+    "tick": 0.0
+  },
+  {
+    "ghost_id": "G-104",
+    "hex_packet": "0x3940D633",
+    "identity": {
+      "resolved": true,
+      "collision": true,
+      "patient": "Patient_8",
+      "age": 44,
+      "internal_id": 8,
+      "parity": 0,
+      "collision_partner": "Patient_9"
+    },
+    "vitals": {
+      "hr": 82,
+      "bp": 133,
+      "spo2": 81,
+      "rr": 18,
+      "temp": 35.9
+    },
+    "news2": {
+      "components": {
+        "rr": 0,
+        "spo2": 3,
+        "bp": 0,
+        "hr": 0,
+        "temp": 1
+      },
+      "total": 4,
+      "level": "MEDIUM"
+    },
+    "drugs": [
+      {
+        "decoded": "Insulin",
+        "shift": 18,
+        "resolved": true,
+        "high_risk": true
+      },
+      {
+        "decoded": "Metformin",
+        "shift": 11,
+        "resolved": true,
+        "high_risk": false
+      }
+    ],
+    "drug_risk": true,
+    "anomaly_raw": -0.5841,
+    "risk": {
+      "score": 37,
+      "status": "MEDIUM",
+      "components": {
+        "news2_weight": 9.0,
+        "anomaly_weight": 17.5,
+        "age_weight": 0.7,
+        "drug_weight": 10.0
+      }
+    },
+    "tick": 0.0
+  },
+  {
+    "ghost_id": "G-111",
+    "hex_packet": "0x2521E81A",
+    "identity": {
+      "resolved": true,
+      "collision": true,
+      "patient": "Patient_22",
+      "age": 14,
+      "internal_id": 22,
+      "parity": 0,
+      "collision_partner": "Patient_23"
+    },
+    "vitals": {
+      "hr": 71,
+      "bp": 114,
+      "spo2": 81,
+      "rr": 14,
+      "temp": 35.6
+    },
+    "news2": {
+      "components": {
+        "rr": 0,
+        "spo2": 3,
+        "bp": 0,
+        "hr": 0,
+        "temp": 1
+      },
+      "total": 4,
+      "level": "MEDIUM"
+    },
+    "drugs": [
+      {
+        "decoded": "UNKNOWN(Ogdwfwb)",
+        "shift": -1,
+        "resolved": false,
+        "high_risk": true
+      },
+      {
+        "decoded": "Amoxicillin",
+        "shift": 11,
+        "resolved": true,
+        "high_risk": false
+      }
+    ],
+    "drug_risk": true,
+    "anomaly_raw": -0.5987,
+    "risk": {
+      "score": 37,
+      "status": "MEDIUM",
+      "components": {
+        "news2_weight": 9.0,
+        "anomaly_weight": 18.0,
+        "age_weight": 0.0,
+        "drug_weight": 10.0
+      }
+    },
+    "tick": 0.0
+  },
+  {
+    "ghost_id": "G-116",
+    "hex_packet": "0x4047D238",
+    "identity": {
+      "resolved": true,
+      "collision": true,
+      "patient": "Patient_32",
+      "age": 48,
+      "internal_id": 32,
+      "parity": 0,
+      "collision_partner": "Patient_33"
+    },
+    "vitals": {
+      "hr": 84,
+      "bp": 136,
+      "spo2": 81,
+      "rr": 18,
+      "temp": 36.1
+    },
+    "news2": {
+      "components": {
+        "rr": 0,
+        "spo2": 3,
+        "bp": 0,
+        "hr": 0,
+        "temp": 0
+      },
+      "total": 3,
+      "level": "MEDIUM"
+    },
+    "drugs": [
+      {
+        "decoded": "UNKNOWN(Wolenej)",
+        "shift": -1,
+        "resolved": false,
+        "high_risk": true
+      },
+      {
+        "decoded": "UNKNOWN(Ewtmvmr)",
+        "shift": -1,
+        "resolved": false,
+        "high_risk": true
+      }
+    ],
+    "drug_risk": true,
+    "anomaly_raw": -0.5822,
+    "risk": {
+      "score": 35,
+      "status": "MEDIUM",
+      "components": {
+        "news2_weight": 6.8,
+        "anomaly_weight": 17.5,
+        "age_weight": 1.1,
+        "drug_weight": 10.0
+      }
+    },
+    "tick": 0.0
+  },
+  {
+    "ghost_id": "G-107",
+    "hex_packet": "0x4343D335",
+    "identity": {
+      "resolved": true,
+      "collision": true,
+      "patient": "Patient_14",
+      "age": 38,
+      "internal_id": 14,
+      "parity": 0,
+      "collision_partner": "Patient_15"
+    },
+    "vitals": {
+      "hr": 83,
+      "bp": 132,
+      "spo2": 81,
+      "rr": 18,
+      "temp": 36.1
+    },
+    "news2": {
+      "components": {
+        "rr": 0,
+        "spo2": 3,
+        "bp": 0,
+        "hr": 0,
+        "temp": 0
+      },
+      "total": 3,
+      "level": "MEDIUM"
+    },
+    "drugs": [
+      {
+        "decoded": "UNKNOWN(Mebuduz)",
+        "shift": -1,
+        "resolved": false,
+        "high_risk": true
+      },
+      {
+        "decoded": "UNKNOWN(Iaxqzqv)",
+        "shift": -1,
+        "resolved": false,
+        "high_risk": true
+      }
+    ],
+    "drug_risk": true,
+    "anomaly_raw": -0.577,
+    "risk": {
+      "score": 34,
+      "status": "MEDIUM",
+      "components": {
+        "news2_weight": 6.8,
+        "anomaly_weight": 17.3,
+        "age_weight": 0.3,
+        "drug_weight": 10.0
+      }
+    },
+    "tick": 0.0
+  },
+  {
+    "ghost_id": "G-114",
+    "hex_packet": "0x8184AA68",
+    "identity": {
+      "resolved": true,
+      "collision": true,
+      "patient": "Patient_29",
+      "age": 21,
+      "internal_id": 29,
+      "parity": 1,
+      "collision_partner": "Patient_28"
+    },
+    "vitals": {
+      "hr": 105,
+      "bp": 164,
+      "spo2": 82,
+      "rr": 24,
+      "temp": 37.1
+    },
+    "news2": {
+      "components": {
+        "rr": 2,
+        "spo2": 3,
+        "bp": 0,
+        "hr": 1,
+        "temp": 0
+      },
+      "total": 6,
+      "level": "HIGH"
+    },
+    "drugs": [
+      {
+        "decoded": "Amoxicillin",
+        "shift": 0,
+        "resolved": true,
+        "high_risk": false
+      },
+      {
+        "decoded": "Amoxicillin",
+        "shift": 21,
+        "resolved": true,
+        "high_risk": false
+      }
+    ],
+    "drug_risk": false,
+    "anomaly_raw": -0.6708,
+    "risk": {
+      "score": 34,
+      "status": "MEDIUM",
+      "components": {
+        "news2_weight": 13.5,
+        "anomaly_weight": 20.1,
+        "age_weight": 0.0,
+        "drug_weight": 0.0
+      }
+    },
+    "tick": 0.0
+  },
+  {
+    "ghost_id": "G-110",
+    "hex_packet": "0x6A72B75A",
+    "identity": {
+      "resolved": true,
+      "collision": true,
+      "patient": "Patient_21",
+      "age": 31,
+      "internal_id": 21,
+      "parity": 1,
+      "collision_partner": "Patient_20"
+    },
+    "vitals": {
+      "hr": 99,
+      "bp": 157,
+      "spo2": 81,
+      "rr": 22,
+      "temp": 36.7
+    },
+    "news2": {
+      "components": {
+        "rr": 2,
+        "spo2": 3,
+        "bp": 0,
+        "hr": 1,
+        "temp": 0
+      },
+      "total": 6,
+      "level": "HIGH"
+    },
+    "drugs": [
+      {
+        "decoded": "Amoxicillin",
+        "shift": 22,
+        "resolved": true,
+        "high_risk": false
+      },
+      {
+        "decoded": "Amoxicillin",
+        "shift": 5,
+        "resolved": true,
+        "high_risk": false
+      }
+    ],
+    "drug_risk": false,
+    "anomaly_raw": -0.6309,
+    "risk": {
+      "score": 33,
+      "status": "MEDIUM",
+      "components": {
+        "news2_weight": 13.5,
+        "anomaly_weight": 18.9,
+        "age_weight": 0.1,
+        "drug_weight": 0.0
+      }
+    },
+    "tick": 0.0
+  },
+  {
+    "ghost_id": "G-112",
+    "hex_packet": "0x3B38D92C",
+    "identity": {
+      "resolved": true,
+      "collision": true,
+      "patient": "Patient_25",
+      "age": 58,
+      "internal_id": 25,
+      "parity": 1,
+      "collision_partner": "Patient_24"
+    },
+    "vitals": {
+      "hr": 79,
+      "bp": 126,
+      "spo2": 81,
+      "rr": 16,
+      "temp": 36.0
+    },
+    "news2": {
+      "components": {
+        "rr": 0,
+        "spo2": 3,
+        "bp": 0,
+        "hr": 0,
+        "temp": 1
+      },
+      "total": 4,
+      "level": "MEDIUM"
+    },
+    "drugs": [
+      {
+        "decoded": "Metformin",
+        "shift": 3,
+        "resolved": true,
+        "high_risk": false
+      },
+      {
+        "decoded": "Metformin",
+        "shift": 6,
+        "resolved": true,
+        "high_risk": false
+      }
+    ],
+    "drug_risk": false,
+    "anomaly_raw": -0.5802,
+    "risk": {
+      "score": 30,
+      "status": "MEDIUM",
+      "components": {
+        "news2_weight": 9.0,
+        "anomaly_weight": 17.4,
+        "age_weight": 3.3,
+        "drug_weight": 0.0
+      }
+    },
+    "tick": 0.0
+  },
+  {
+    "ghost_id": "G-109",
+    "hex_packet": "0x2B2FE125",
+    "identity": {
+      "resolved": true,
+      "collision": true,
+      "patient": "Patient_19",
+      "age": 33,
+      "internal_id": 19,
+      "parity": 1,
+      "collision_partner": "Patient_18"
+    },
+    "vitals": {
+      "hr": 76,
+      "bp": 124,
+      "spo2": 80,
+      "rr": 16,
+      "temp": 35.7
+    },
+    "news2": {
+      "components": {
+        "rr": 0,
+        "spo2": 3,
+        "bp": 0,
+        "hr": 0,
+        "temp": 1
+      },
+      "total": 4,
+      "level": "MEDIUM"
+    },
+    "drugs": [
+      {
+        "decoded": "Metformin",
+        "shift": 5,
+        "resolved": true,
+        "high_risk": false
+      },
+      {
+        "decoded": "Metformin",
+        "shift": 7,
+        "resolved": true,
+        "high_risk": false
+      }
+    ],
+    "drug_risk": false,
+    "anomaly_raw": -0.5907,
+    "risk": {
+      "score": 27,
+      "status": "STABLE",
+      "components": {
+        "news2_weight": 9.0,
+        "anomaly_weight": 17.7,
+        "age_weight": 0.2,
+        "drug_weight": 0.0
+      }
+    },
+    "tick": 0.0
+  },
+  {
+    "ghost_id": "G-113",
+    "hex_packet": "0x3D44D436",
+    "identity": {
+      "resolved": true,
+      "collision": true,
+      "patient": "Patient_26",
+      "age": 46,
+      "internal_id": 26,
+      "parity": 0,
+      "collision_partner": "Patient_27"
+    },
+    "vitals": {
+      "hr": 83,
+      "bp": 135,
+      "spo2": 81,
+      "rr": 18,
+      "temp": 36.0
+    },
+    "news2": {
+      "components": {
+        "rr": 0,
+        "spo2": 3,
+        "bp": 0,
+        "hr": 0,
+        "temp": 1
+      },
+      "total": 4,
+      "level": "MEDIUM"
+    },
+    "drugs": [
+      {
+        "decoded": "Metformin",
+        "shift": 20,
+        "resolved": true,
+        "high_risk": false
+      },
+      {
+        "decoded": "Amoxicillin",
+        "shift": 15,
+        "resolved": true,
+        "high_risk": false
+      }
+    ],
+    "drug_risk": false,
+    "anomaly_raw": -0.5837,
+    "risk": {
+      "score": 27,
+      "status": "STABLE",
+      "components": {
+        "news2_weight": 9.0,
+        "anomaly_weight": 17.5,
+        "age_weight": 0.9,
+        "drug_weight": 0.0
+      }
+    },
+    "tick": 0.0
+  },
+  {
+    "ghost_id": "G-119",
+    "hex_packet": "0x2022E91A",
+    "identity": {
+      "resolved": true,
+      "collision": true,
+      "patient": "Patient_39",
+      "age": 29,
+      "internal_id": 39,
+      "parity": 1,
+      "collision_partner": "Patient_38"
+    },
+    "vitals": {
+      "hr": 71,
+      "bp": 116,
+      "spo2": 80,
+      "rr": 15,
+      "temp": 35.5
+    },
+    "news2": {
+      "components": {
+        "rr": 0,
+        "spo2": 3,
+        "bp": 0,
+        "hr": 0,
+        "temp": 1
+      },
+      "total": 4,
+      "level": "MEDIUM"
+    },
+    "drugs": [
+      {
+        "decoded": "Metformin",
+        "shift": 21,
+        "resolved": true,
+        "high_risk": false
+      },
+      {
+        "decoded": "Metformin",
+        "shift": 3,
+        "resolved": true,
+        "high_risk": false
+      }
+    ],
+    "drug_risk": false,
+    "anomaly_raw": -0.6021,
+    "risk": {
+      "score": 27,
+      "status": "STABLE",
+      "components": {
+        "news2_weight": 9.0,
+        "anomaly_weight": 18.1,
+        "age_weight": 0.1,
+        "drug_weight": 0.0
+      }
+    },
+    "tick": 0.0
+  },
+  {
+    "ghost_id": "G-101",
+    "hex_packet": "0x6257C443",
+    "identity": {
+      "resolved": true,
+      "collision": true,
+      "patient": "Patient_3",
+      "age": 52,
+      "internal_id": 3,
+      "parity": 1,
+      "collision_partner": "Patient_2"
+    },
+    "vitals": {
+      "hr": 90,
+      "bp": 138,
+      "spo2": 82,
+      "rr": 19,
+      "temp": 36.6
+    },
+    "news2": {
+      "components": {
+        "rr": 0,
+        "spo2": 3,
+        "bp": 0,
+        "hr": 0,
+        "temp": 0
+      },
+      "total": 3,
+      "level": "MEDIUM"
+    },
+    "drugs": [
+      {
+        "decoded": "Amoxicillin",
+        "shift": 11,
+        "resolved": true,
+        "high_risk": false
+      },
+      {
+        "decoded": "Amoxicillin",
+        "shift": 0,
+        "resolved": true,
+        "high_risk": false
+      }
+    ],
+    "drug_risk": false,
+    "anomaly_raw": -0.5656,
+    "risk": {
+      "score": 26,
+      "status": "STABLE",
+      "components": {
+        "news2_weight": 6.8,
+        "anomaly_weight": 17.0,
+        "age_weight": 1.8,
+        "drug_weight": 0.0
+      }
+    },
+    "tick": 0.0
+  },
+  {
+    "ghost_id": "G-118",
+    "hex_packet": "0x474DCE3D",
+    "identity": {
+      "resolved": true,
+      "collision": true,
+      "patient": "Patient_36",
+      "age": 50,
+      "internal_id": 36,
+      "parity": 0,
+      "collision_partner": "Patient_37"
+    },
+    "vitals": {
+      "hr": 86,
+      "bp": 139,
+      "spo2": 81,
+      "rr": 19,
+      "temp": 36.2
+    },
+    "news2": {
+      "components": {
+        "rr": 0,
+        "spo2": 3,
+        "bp": 0,
+        "hr": 0,
+        "temp": 0
+      },
+      "total": 3,
+      "level": "MEDIUM"
+    },
+    "drugs": [
+      {
+        "decoded": "Metformin",
+        "shift": 24,
+        "resolved": true,
+        "high_risk": false
+      },
+      {
+        "decoded": "Amoxicillin",
+        "shift": 11,
+        "resolved": true,
+        "high_risk": false
+      }
+    ],
+    "drug_risk": false,
+    "anomaly_raw": -0.5927,
+    "risk": {
+      "score": 26,
+      "status": "STABLE",
+      "components": {
+        "news2_weight": 6.8,
+        "anomaly_weight": 17.8,
+        "age_weight": 1.4,
+        "drug_weight": 0.0
+      }
+    },
+    "tick": 0.0
+  }
+]
